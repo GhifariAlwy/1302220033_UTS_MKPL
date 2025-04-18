@@ -15,30 +15,34 @@ public class TaxFunction {
 	 */
 	
 	
-	public static int calculateTax(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking, int deductible, boolean isMarried, int numberOfChildren) {
-		
-		int tax = 0;
-		
-		if (numberOfMonthWorking > 12) {
-			System.err.println("More than 12 month working per year");
-		}
-		
-		if (numberOfChildren > 3) {
-			numberOfChildren = 3;
-		}
-		
-		if (isMarried) {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - (54000000 + 4500000 + (numberOfChildren * 1500000))));
-		}else {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - 54000000));
-		}
-		
-		if (tax < 0) {
-			return 0;
-		}else {
-			return tax;
-		}
-			 
+	public static int calculateTax(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking,
+                             int deductible, boolean isMarried, int numberOfChildren) {
+    	// Validasi input
+    	if (numberOfMonthWorking > 12) {
+        	System.err.println("More than 12 month working per year");
+    	}
+
+    	// Konstanta pajak
+    	final double TAX_RATE = 0.05;
+    	final int NON_TAXABLE_BASE = 54000000;
+    	final int MARRIED_DEDUCTION = 4500000;
+    	final int PER_CHILD_DEDUCTION = 1500000;
+    	final int MAX_CHILDREN = 3;
+
+    	// Hitung komponen pajak
+    	int actualChildren = Math.min(numberOfChildren, MAX_CHILDREN);
+   	int totalIncome = (monthlySalary + otherMonthlyIncome) * numberOfMonthWorking;
+    	int taxableIncome = totalIncome - deductible;
+    
+    	// Hitung pengurangan pajak
+    	int taxDeduction = NON_TAXABLE_BASE;
+    	if (isMarried) {
+        	taxDeduction += MARRIED_DEDUCTION + (actualChildren * PER_CHILD_DEDUCTION);
+    	}
+
+    	// Hitung pajak akhir
+    	int tax = (int) Math.round(TAX_RATE * (taxableIncome - taxDeduction));
+    	return Math.max(tax, 0);
 	}
 	
 }
